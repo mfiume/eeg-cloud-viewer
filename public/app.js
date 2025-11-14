@@ -74,17 +74,17 @@ async function loadGCSFile(bucketName, fileName) {
         const fileInfo = document.getElementById('fileInfo');
         fileInfo.innerHTML = '<p>Loading file from GCS...</p>';
 
-        // Get signed URL
-        const response = await fetch(`/api/download/${bucketName}/${fileName}`);
-        const data = await response.json();
+        // Download file directly through proxy
+        const downloadUrl = `/api/download/${bucketName}/${fileName}`;
+        const response = await fetch(downloadUrl);
 
         if (!response.ok) {
-            throw new Error(data.error || 'Failed to get download URL');
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to download file');
         }
 
-        // Download file
-        const fileResponse = await fetch(data.url);
-        const arrayBuffer = await fileResponse.arrayBuffer();
+        // Get array buffer
+        const arrayBuffer = await response.arrayBuffer();
 
         await parseAndDisplayEDF(arrayBuffer, fileName);
     } catch (error) {

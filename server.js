@@ -54,7 +54,7 @@ app.get('/api/files/:bucketName', async (req, res) => {
   }
 });
 
-// Get signed URL for downloading an EDF file
+// Proxy download for GCS file (streams directly through server)
 app.get('/api/download/:bucketName/*', async (req, res) => {
   try {
     if (!storage) {
@@ -69,16 +69,32 @@ app.get('/api/download/:bucketName/*', async (req, res) => {
     const bucket = storage.bucket(bucketName);
     const file = bucket.file(fileName);
 
-    // Generate signed URL valid for 15 minutes
-    const [url] = await file.getSignedUrl({
-      version: 'v4',
-      action: 'read',
-      expires: Date.now() + 15 * 60 * 1000, // 15 minutes
-    });
+    // Check if file exists
+    const [exists] = await file.exists();
+    if (!exists) {
+      return res.status(404).json({ error: 'File not found' });
+    }
 
-    res.json({ url });
+    // Get file metadata
+    const [metadata] = await file.getMetadata();
+
+    // Set headers
+    res.setHeader('Content-Type', 'application/octet-stream');
+    res.setHeader('Content-Length', metadata.size);
+    res.setHeader('Content-Disposition', `attachment; filename="${fileName.split('/').pop()}"`);
+    res.setHeader('Access-Control-Allow-Origin', '*');
+
+    // Stream the file
+    file.createReadStream()
+      .on('error', (err) => {
+        console.error('Error streaming file:', err);
+        if (!res.headersSent) {
+          res.status(500).json({ error: 'Error streaming file' });
+        }
+      })
+      .pipe(res);
   } catch (error) {
-    console.error('Error generating download URL:', error);
+    console.error('Error downloading file:', error);
     res.status(500).json({ error: error.message });
   }
 });
