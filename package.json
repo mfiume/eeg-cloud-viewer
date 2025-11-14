@@ -1,0 +1,21 @@
+{
+  "name": "eeg-cloud-viewer",
+  "version": "1.0.0",
+  "description": "Browser-based EEG viewer with Google Cloud Storage integration",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["eeg", "viewer", "gcs", "cloud-storage", "edf"],
+  "author": "Marc Fiume",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "@google-cloud/storage": "^7.7.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
