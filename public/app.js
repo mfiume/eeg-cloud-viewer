@@ -218,3 +218,12 @@ function showError(element, message) {
 function closeFileList() {
     document.getElementById('fileListSidebar').style.display = 'none';
 }
+
+function toggleFileList() {
+    const sidebar = document.getElementById('fileListSidebar');
+    if (sidebar.style.display === 'none' || sidebar.style.display === '') {
+        sidebar.style.display = 'block';
+    } else {
+        sidebar.style.display = 'none';
+    }
+}

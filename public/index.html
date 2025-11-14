@@ -24,6 +24,7 @@
                     <input type="text" id="prefix" placeholder="optional" value="samples/" />
                 </div>
                 <button onclick="loadFiles()">Load from GCS</button>
+                <button onclick="toggleFileList()">Show Files</button>
                 <span class="separator">|</span>
                 <input type="file" id="localFile" accept=".edf" onchange="loadLocalFile()" />
             </div>
@@ -53,17 +54,19 @@
 
         <!-- EEG Viewer - Full Screen -->
         <div class="viewer-panel">
-            <canvas id="eegCanvas"></canvas>
+            <div class="canvas-wrapper">
+                <canvas id="eegCanvas"></canvas>
+            </div>
 
             <!-- Timeline Scrubber -->
             <div id="timelineScrubber" class="timeline-scrubber" style="display: none;">
                 <div class="timeline-track">
                     <div class="timeline-progress" id="timelineProgress"></div>
                     <input type="range" id="timelineSlider" min="0" max="100" step="0.1" value="0" oninput="updateTimelinePosition(this.value)" />
-                    <div class="timeline-labels">
-                        <span id="currentTime">0:00</span>
-                        <span id="totalDuration">0:00</span>
-                    </div>
+                </div>
+                <div class="timeline-labels">
+                    <span id="currentTime">0:00</span>
+                    <span id="totalDuration">0:00</span>
                 </div>
             </div>
 
