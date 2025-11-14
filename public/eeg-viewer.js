@@ -54,7 +54,7 @@ class EEGViewer {
         const height = rect.height;
 
         // Clear canvas
-        this.ctx.fillStyle = '#0a0a0a';
+        this.ctx.fillStyle = '#ffffff';
         this.ctx.fillRect(0, 0, width, height);
 
         const signals = this.edfData.signals;
@@ -82,7 +82,7 @@ class EEGViewer {
     }
 
     drawGrid(width, height, startTime, endTime) {
-        this.ctx.strokeStyle = '#1a1a1a';
+        this.ctx.strokeStyle = '#f1f5f9';
         this.ctx.lineWidth = 1;
 
         // Vertical grid lines (time)
@@ -96,7 +96,7 @@ class EEGViewer {
 
             // Time labels
             const time = startTime + (endTime - startTime) * (i / numVerticalLines);
-            this.ctx.fillStyle = '#666666';
+            this.ctx.fillStyle = '#94a3b8';
             this.ctx.font = '11px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
             this.ctx.fillText(time.toFixed(1) + 's', x + 2, height - 5);
         }
@@ -144,8 +144,8 @@ class EEGViewer {
         this.ctx.stroke();
 
         // Draw baseline
-        this.ctx.strokeStyle = '#222222';
-        this.ctx.lineWidth = 0.5;
+        this.ctx.strokeStyle = '#e5e7eb';
+        this.ctx.lineWidth = 1;
         this.ctx.beginPath();
         this.ctx.moveTo(0, centerY);
         this.ctx.lineTo(width, centerY);
@@ -153,8 +153,8 @@ class EEGViewer {
     }
 
     drawLabels(signals, channelHeight) {
-        this.ctx.fillStyle = '#ffffff';
-        this.ctx.font = 'bold 12px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+        this.ctx.fillStyle = '#0f172a';
+        this.ctx.font = '600 12px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
 
         signals.forEach((signal, index) => {
             const y = channelHeight * index + 15;
@@ -167,15 +167,15 @@ class EEGViewer {
 
     getChannelColor(index) {
         const colors = [
-            '#ffffff', '#dddddd', '#bbbbbb', '#999999',
-            '#cccccc', '#aaaaaa', '#888888', '#e5e5e5'
+            '#0f172a', '#1e293b', '#334155', '#475569',
+            '#64748b', '#1e293b', '#334155', '#475569'
         ];
         return colors[index % colors.length];
     }
 
     clear() {
         const rect = this.canvas.getBoundingClientRect();
-        this.ctx.fillStyle = '#0a0a0a';
+        this.ctx.fillStyle = '#ffffff';
         this.ctx.fillRect(0, 0, rect.width, rect.height);
     }
 }
