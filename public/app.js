@@ -73,7 +73,7 @@ async function loadFiles() {
         });
 
         // Show file list sidebar
-        document.getElementById('fileListSidebar').style.display = 'block';
+        document.getElementById('fileListSidebar').style.display = 'flex';
     } catch (error) {
         showError(fileList, error.message);
     }
@@ -226,10 +226,14 @@ function closeFileList() {
     document.getElementById('fileListSidebar').style.display = 'none';
 }
 
+function openFileLoader() {
+    document.getElementById('fileListSidebar').style.display = 'flex';
+}
+
 function toggleFileList() {
     const sidebar = document.getElementById('fileListSidebar');
     if (sidebar.style.display === 'none' || sidebar.style.display === '') {
-        sidebar.style.display = 'block';
+        sidebar.style.display = 'flex';
     } else {
         sidebar.style.display = 'none';
     }

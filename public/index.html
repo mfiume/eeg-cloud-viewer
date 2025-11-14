@@ -15,18 +15,7 @@
             </div>
 
             <div class="menu-section file-controls">
-                <div class="control-item">
-                    <label>GCS Bucket:</label>
-                    <input type="text" id="bucketName" placeholder="bucket-name" value="eeg-viewer-demo-samples" />
-                </div>
-                <div class="control-item">
-                    <label>Prefix:</label>
-                    <input type="text" id="prefix" placeholder="optional" value="samples/" />
-                </div>
-                <button onclick="loadFiles()">Load from GCS</button>
-                <button onclick="toggleFileList()">Show Files</button>
-                <span class="separator">|</span>
-                <input type="file" id="localFile" accept=".edf" onchange="loadLocalFile()" />
+                <button onclick="openFileLoader()">Load File</button>
             </div>
 
             <div class="menu-section viewer-controls-inline" id="viewerControlsInline" style="display: none;">
@@ -49,13 +38,33 @@
             </div>
         </header>
 
-        <!-- File List Sidebar (collapsible) -->
+        <!-- File Loader Sidebar -->
         <div id="fileListSidebar" class="file-list-sidebar" style="display: none;">
             <div class="sidebar-header">
-                <h3>Files</h3>
+                <h3>Load File</h3>
                 <button onclick="closeFileList()">✕</button>
             </div>
-            <div id="fileList" class="file-list"></div>
+
+            <div class="sidebar-content">
+                <!-- Local File Upload -->
+                <div class="loader-section">
+                    <h4>Local File</h4>
+                    <input type="file" id="localFile" accept=".edf" onchange="loadLocalFile()" />
+                </div>
+
+                <!-- GCS Loader -->
+                <div class="loader-section">
+                    <h4>Google Cloud Storage</h4>
+                    <div class="gcs-inputs">
+                        <input type="text" id="bucketName" placeholder="Bucket name" value="eeg-viewer-demo-samples" />
+                        <input type="text" id="prefix" placeholder="Prefix (optional)" value="samples/" />
+                        <button onclick="loadFiles()">Load from GCS</button>
+                    </div>
+                </div>
+
+                <!-- File List -->
+                <div id="fileList" class="file-list"></div>
+            </div>
         </div>
 
         <!-- EEG Viewer - Full Screen -->
