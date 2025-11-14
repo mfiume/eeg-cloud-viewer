@@ -53,8 +53,11 @@ class EEGViewer {
         const width = rect.width;
         const height = rect.height;
 
-        // Clear canvas
-        this.ctx.fillStyle = '#ffffff';
+        // Clear canvas with subtle gradient
+        const gradient = this.ctx.createLinearGradient(0, 0, 0, height);
+        gradient.addColorStop(0, '#ffffff');
+        gradient.addColorStop(1, '#fafbfc');
+        this.ctx.fillStyle = gradient;
         this.ctx.fillRect(0, 0, width, height);
 
         const signals = this.edfData.signals;
@@ -82,8 +85,8 @@ class EEGViewer {
     }
 
     drawGrid(width, height, startTime, endTime) {
-        this.ctx.strokeStyle = '#f1f5f9';
-        this.ctx.lineWidth = 1;
+        this.ctx.strokeStyle = 'rgba(0, 0, 0, 0.04)';
+        this.ctx.lineWidth = 0.5;
 
         // Vertical grid lines (time)
         const numVerticalLines = 10;
@@ -96,9 +99,9 @@ class EEGViewer {
 
             // Time labels
             const time = startTime + (endTime - startTime) * (i / numVerticalLines);
-            this.ctx.fillStyle = '#94a3b8';
-            this.ctx.font = '11px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-            this.ctx.fillText(time.toFixed(1) + 's', x + 2, height - 5);
+            this.ctx.fillStyle = '#86868b';
+            this.ctx.font = '500 11px -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif';
+            this.ctx.fillText(time.toFixed(1) + 's', x + 2, height - 8);
         }
 
         // Horizontal grid lines (channels)
@@ -144,8 +147,8 @@ class EEGViewer {
         this.ctx.stroke();
 
         // Draw baseline
-        this.ctx.strokeStyle = '#e5e7eb';
-        this.ctx.lineWidth = 1;
+        this.ctx.strokeStyle = 'rgba(0, 0, 0, 0.06)';
+        this.ctx.lineWidth = 0.5;
         this.ctx.beginPath();
         this.ctx.moveTo(0, centerY);
         this.ctx.lineTo(width, centerY);
@@ -153,8 +156,8 @@ class EEGViewer {
     }
 
     drawLabels(signals, channelHeight) {
-        this.ctx.fillStyle = '#0f172a';
-        this.ctx.font = '600 12px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+        this.ctx.fillStyle = '#1d1d1f';
+        this.ctx.font = '600 12px -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif';
 
         signals.forEach((signal, index) => {
             const y = channelHeight * index + 15;
@@ -183,7 +186,10 @@ class EEGViewer {
 
     clear() {
         const rect = this.canvas.getBoundingClientRect();
-        this.ctx.fillStyle = '#ffffff';
+        const gradient = this.ctx.createLinearGradient(0, 0, 0, rect.height);
+        gradient.addColorStop(0, '#ffffff');
+        gradient.addColorStop(1, '#fafbfc');
+        this.ctx.fillStyle = gradient;
         this.ctx.fillRect(0, 0, rect.width, rect.height);
     }
 }
