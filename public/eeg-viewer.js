@@ -82,6 +82,32 @@ class EEGViewer {
                 this.canvas.style.cursor = 'grab';
             }
         });
+
+        // Add horizontal scroll support for panning
+        this.canvas.addEventListener('wheel', (e) => {
+            if (!this.edfData) return;
+
+            // Check if horizontal scroll (shift+wheel or trackpad horizontal scroll)
+            if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+                e.preventDefault();
+
+                // Calculate new position based on scroll delta
+                const scrollSensitivity = 0.1; // Adjust sensitivity
+                const deltaPercent = (e.deltaX / this.canvas.getBoundingClientRect().width) * 100 * scrollSensitivity;
+
+                const newPosition = Math.max(0, Math.min(100, this.scrollPosition + deltaPercent));
+                this.setScrollPosition(newPosition);
+
+                // Update timeline slider
+                const timelineSlider = document.getElementById('timelineSlider');
+                if (timelineSlider) {
+                    timelineSlider.value = newPosition;
+                    if (window.updateTimelinePosition) {
+                        window.updateTimelinePosition(newPosition);
+                    }
+                }
+            }
+        }, { passive: false });
     }
 
     setData(edfData) {
