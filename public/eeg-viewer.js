@@ -116,11 +116,8 @@ class EEGViewer {
         const width = rect.width;
         const height = rect.height;
 
-        // Clear canvas with subtle gradient
-        const gradient = this.ctx.createLinearGradient(0, 0, 0, height);
-        gradient.addColorStop(0, '#ffffff');
-        gradient.addColorStop(1, '#fafbfc');
-        this.ctx.fillStyle = gradient;
+        // Clear canvas
+        this.ctx.fillStyle = '#ffffff';
         this.ctx.fillRect(0, 0, width, height);
 
         const signals = this.edfData.signals;
@@ -270,10 +267,7 @@ class EEGViewer {
 
     clear() {
         const rect = this.canvas.getBoundingClientRect();
-        const gradient = this.ctx.createLinearGradient(0, 0, 0, rect.height);
-        gradient.addColorStop(0, '#ffffff');
-        gradient.addColorStop(1, '#fafbfc');
-        this.ctx.fillStyle = gradient;
+        this.ctx.fillStyle = '#ffffff';
         this.ctx.fillRect(0, 0, rect.width, rect.height);
     }
 }
