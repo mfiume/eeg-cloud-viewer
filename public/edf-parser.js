@@ -84,10 +84,29 @@ class EDFParser {
 
         // Parse data records
         offset = this.header.headerBytes;
-        for (let record = 0; record < this.header.numDataRecords; record++) {
+
+        // Validate expected file size
+        let expectedSize = this.header.headerBytes;
+        for (let sig = 0; sig < ns; sig++) {
+            expectedSize += this.header.numDataRecords * this.signals[sig].numSamplesPerRecord * 2;
+        }
+
+        if (expectedSize > arrayBuffer.byteLength) {
+            throw new Error(`File size mismatch: expected ${expectedSize} bytes, got ${arrayBuffer.byteLength} bytes`);
+        }
+
+        // Limit data loading for large files (only load first 5 minutes)
+        const maxRecordsToLoad = Math.min(this.header.numDataRecords, 300);
+        const actualRecords = this.header.numDataRecords;
+        console.log(`Loading ${maxRecordsToLoad} of ${actualRecords} records (${(maxRecordsToLoad * this.header.durationDataRecord).toFixed(0)} seconds)...`);
+
+        for (let record = 0; record < maxRecordsToLoad; record++) {
             for (let sig = 0; sig < ns; sig++) {
                 const numSamples = this.signals[sig].numSamplesPerRecord;
                 for (let sample = 0; sample < numSamples; sample++) {
+                    if (offset + 2 > arrayBuffer.byteLength) {
+                        throw new Error(`Unexpected end of file at offset ${offset}`);
+                    }
                     const digitalValue = dataView.getInt16(offset, true);
                     offset += 2;
 
@@ -105,6 +124,9 @@ class EDFParser {
                 }
             }
         }
+
+        // Update header to reflect actually loaded records
+        this.header.numDataRecords = maxRecordsToLoad;
 
         return {
             header: this.header,

@@ -167,12 +167,14 @@ function updateViewer() {
 
     const amplitudeScale = parseFloat(document.getElementById('amplitudeScale').value);
     const timeWindow = parseInt(document.getElementById('timeWindow').value);
+    const autoScale = document.getElementById('autoScale').checked;
 
     document.getElementById('amplitudeValue').textContent = amplitudeScale.toFixed(1) + 'x';
     document.getElementById('timeWindowValue').textContent = timeWindow + 's';
 
     viewer.setAmplitudeScale(amplitudeScale);
     viewer.setTimeWindow(timeWindow);
+    viewer.setAutoScale(autoScale);
 }
 
 // Initialize timeline

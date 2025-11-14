@@ -10,8 +10,15 @@ class EEGViewer {
         this.amplitudeScale = 1.0;
         this.timeWindow = 10; // seconds
         this.scrollPosition = 0; // 0-100%
+        this.autoScale = true; // Auto-scale channels by default
+
+        // Panning state
+        this.isDragging = false;
+        this.dragStartX = 0;
+        this.dragStartScrollPosition = 0;
 
         this.setupCanvas();
+        this.setupPanning();
     }
 
     setupCanvas() {
@@ -24,6 +31,57 @@ class EEGViewer {
         this.ctx.scale(dpr, dpr);
         this.canvas.style.width = rect.width + 'px';
         this.canvas.style.height = rect.height + 'px';
+    }
+
+    setupPanning() {
+        this.canvas.addEventListener('mousedown', (e) => {
+            if (!this.edfData) return;
+            this.isDragging = true;
+            this.dragStartX = e.clientX;
+            this.dragStartScrollPosition = this.scrollPosition;
+            this.canvas.style.cursor = 'grabbing';
+        });
+
+        this.canvas.addEventListener('mousemove', (e) => {
+            if (!this.isDragging || !this.edfData) return;
+
+            const rect = this.canvas.getBoundingClientRect();
+            const deltaX = e.clientX - this.dragStartX;
+            // Reduce sensitivity by dividing by 5
+            const deltaPercent = -(deltaX / rect.width) * 100 / 5;
+
+            const newPosition = Math.max(0, Math.min(100, this.dragStartScrollPosition + deltaPercent));
+            this.setScrollPosition(newPosition);
+
+            // Update timeline slider if it exists
+            const timelineSlider = document.getElementById('timelineSlider');
+            if (timelineSlider) {
+                timelineSlider.value = newPosition;
+                // Update the timeline display
+                if (window.updateTimelinePosition) {
+                    window.updateTimelinePosition(newPosition);
+                }
+            }
+        });
+
+        this.canvas.addEventListener('mouseup', () => {
+            this.isDragging = false;
+            this.canvas.style.cursor = 'grab';
+        });
+
+        this.canvas.addEventListener('mouseleave', () => {
+            if (this.isDragging) {
+                this.isDragging = false;
+                this.canvas.style.cursor = 'grab';
+            }
+        });
+
+        // Update cursor on hover
+        this.canvas.addEventListener('mouseenter', () => {
+            if (this.edfData && !this.isDragging) {
+                this.canvas.style.cursor = 'grab';
+            }
+        });
     }
 
     setData(edfData) {
@@ -43,6 +101,11 @@ class EEGViewer {
 
     setScrollPosition(percent) {
         this.scrollPosition = percent;
+        this.render();
+    }
+
+    setAutoScale(enabled) {
+        this.autoScale = enabled;
         this.render();
     }
 
@@ -123,9 +186,30 @@ class EEGViewer {
         if (startSample >= endSample) return;
 
         // Calculate scale
-        const range = signal.physicalMaximum - signal.physicalMinimum;
-        const scale = (channelHeight * 0.4) / range * this.amplitudeScale;
+        let range, offset;
+        if (this.autoScale) {
+            // Auto-scale: find min/max in visible window
+            let min = Infinity, max = -Infinity;
+            for (let i = startSample; i < endSample; i++) {
+                const val = signal.samples[i];
+                if (val < min) min = val;
+                if (val > max) max = val;
+            }
+            range = max - min;
+            offset = (max + min) / 2;
+            // Use more vertical space for auto-scale
+            const scale = range > 0 ? (channelHeight * 0.8) / range * this.amplitudeScale : 1;
+            this.drawSignalLine(signal, centerY, width, startSample, endSample, offset, scale, index);
+        } else {
+            // Original scaling based on physical min/max
+            range = signal.physicalMaximum - signal.physicalMinimum;
+            offset = (signal.physicalMaximum + signal.physicalMinimum) / 2;
+            const scale = (channelHeight * 0.4) / range * this.amplitudeScale;
+            this.drawSignalLine(signal, centerY, width, startSample, endSample, offset, scale, index);
+        }
+    }
 
+    drawSignalLine(signal, centerY, width, startSample, endSample, offset, scale, index) {
         // Draw signal line
         this.ctx.strokeStyle = this.getChannelColor(index);
         this.ctx.lineWidth = 1.5;
@@ -135,7 +219,7 @@ class EEGViewer {
         for (let i = startSample; i < endSample; i++) {
             const sample = signal.samples[i];
             const x = ((i - startSample) / (endSample - startSample)) * width;
-            const y = centerY - (sample - (signal.physicalMaximum + signal.physicalMinimum) / 2) * scale;
+            const y = centerY - (sample - offset) * scale;
 
             if (firstPoint) {
                 this.ctx.moveTo(x, y);

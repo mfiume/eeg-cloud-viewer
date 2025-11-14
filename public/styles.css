@@ -78,6 +78,11 @@ body {
     font-variant-numeric: tabular-nums;
 }
 
+.control-item input[type="checkbox"] {
+    margin-right: 6px;
+    cursor: pointer;
+}
+
 .separator {
     color: rgba(0, 0, 0, 0.1);
     margin: 0 6px;
@@ -340,7 +345,7 @@ body {
 #eegCanvas {
     width: 100%;
     height: 100%;
-    cursor: crosshair;
+    cursor: grab;
 }
 
 /* Beautiful Timeline Scrubber - Liquid Glass */

@@ -40,6 +40,12 @@
                     <input type="range" id="timeWindow" min="1" max="30" step="1" value="10" oninput="updateViewer()" />
                     <span id="timeWindowValue">10s</span>
                 </div>
+                <div class="control-item">
+                    <label>
+                        <input type="checkbox" id="autoScale" checked onchange="updateViewer()" />
+                        Auto-scale
+                    </label>
+                </div>
             </div>
         </header>
 
