@@ -8,53 +8,58 @@
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>🧠 EEG Cloud Viewer</h1>
-            <p>Browser-based EEG/EDF viewer with Google Cloud Storage integration</p>
+        <!-- Compact Top Menu Bar -->
+        <header class="top-menu">
+            <div class="menu-section">
+                <h1>🧠 EEG Cloud Viewer</h1>
+            </div>
+
+            <div class="menu-section file-controls">
+                <div class="control-item">
+                    <label>GCS Bucket:</label>
+                    <input type="text" id="bucketName" placeholder="bucket-name" />
+                </div>
+                <div class="control-item">
+                    <label>Prefix:</label>
+                    <input type="text" id="prefix" placeholder="optional" />
+                </div>
+                <button onclick="loadFiles()">Load from GCS</button>
+                <span class="separator">|</span>
+                <input type="file" id="localFile" accept=".edf" onchange="loadLocalFile()" />
+            </div>
+
+            <div class="menu-section viewer-controls-inline" id="viewerControlsInline" style="display: none;">
+                <div class="control-item">
+                    <label>Amplitude:</label>
+                    <input type="range" id="amplitudeScale" min="0.1" max="5" step="0.1" value="1" oninput="updateViewer()" />
+                    <span id="amplitudeValue">1.0x</span>
+                </div>
+                <div class="control-item">
+                    <label>Window:</label>
+                    <input type="range" id="timeWindow" min="1" max="30" step="1" value="10" oninput="updateViewer()" />
+                    <span id="timeWindowValue">10s</span>
+                </div>
+                <div class="control-item">
+                    <label>Position:</label>
+                    <input type="range" id="scrollPosition" min="0" max="100" step="1" value="0" oninput="updateViewer()" />
+                    <span id="scrollPositionValue">0%</span>
+                </div>
+            </div>
         </header>
 
-        <div class="content">
-            <!-- GCS File Browser -->
-            <div class="panel">
-                <h2>Google Cloud Storage</h2>
-                <div class="gcs-controls">
-                    <input type="text" id="bucketName" placeholder="Enter GCS bucket name" />
-                    <input type="text" id="prefix" placeholder="Folder prefix (optional)" />
-                    <button onclick="loadFiles()">Load Files</button>
-                </div>
-                <div id="fileList" class="file-list"></div>
+        <!-- File List Sidebar (collapsible) -->
+        <div id="fileListSidebar" class="file-list-sidebar" style="display: none;">
+            <div class="sidebar-header">
+                <h3>Files</h3>
+                <button onclick="closeFileList()">✕</button>
             </div>
+            <div id="fileList" class="file-list"></div>
+        </div>
 
-            <!-- Local File Upload -->
-            <div class="panel">
-                <h2>Local File</h2>
-                <input type="file" id="localFile" accept=".edf" onchange="loadLocalFile()" />
-                <p class="help-text">Select an EDF file from your computer</p>
-            </div>
-
-            <!-- EEG Viewer -->
-            <div class="viewer-panel">
-                <h2>EEG Viewer</h2>
-                <div id="viewerControls" class="viewer-controls" style="display: none;">
-                    <div class="control-group">
-                        <label>Amplitude Scale:</label>
-                        <input type="range" id="amplitudeScale" min="0.1" max="5" step="0.1" value="1" oninput="updateViewer()" />
-                        <span id="amplitudeValue">1.0x</span>
-                    </div>
-                    <div class="control-group">
-                        <label>Time Window (s):</label>
-                        <input type="range" id="timeWindow" min="1" max="30" step="1" value="10" oninput="updateViewer()" />
-                        <span id="timeWindowValue">10s</span>
-                    </div>
-                    <div class="control-group">
-                        <label>Scroll Position:</label>
-                        <input type="range" id="scrollPosition" min="0" max="100" step="1" value="0" oninput="updateViewer()" />
-                        <span id="scrollPositionValue">0%</span>
-                    </div>
-                </div>
-                <canvas id="eegCanvas"></canvas>
-                <div id="fileInfo" class="file-info"></div>
-            </div>
+        <!-- EEG Viewer - Full Screen -->
+        <div class="viewer-panel">
+            <canvas id="eegCanvas"></canvas>
+            <div id="fileInfo" class="file-info"></div>
         </div>
     </div>
 

@@ -49,7 +49,10 @@ async function loadFiles() {
         data.files.forEach(file => {
             const fileItem = document.createElement('div');
             fileItem.className = 'file-item';
-            fileItem.onclick = () => loadGCSFile(file.bucket, file.name);
+            fileItem.onclick = () => {
+                loadGCSFile(file.bucket, file.name);
+                closeFileList();
+            };
 
             const fileName = document.createElement('span');
             fileName.className = 'file-name';
@@ -63,6 +66,9 @@ async function loadFiles() {
             fileItem.appendChild(fileSize);
             fileList.appendChild(fileItem);
         });
+
+        // Show file list sidebar
+        document.getElementById('fileListSidebar').style.display = 'block';
     } catch (error) {
         showError(fileList, error.message);
     }
@@ -118,8 +124,8 @@ async function parseAndDisplayEDF(arrayBuffer, fileName) {
         currentEDFData = await parser.parse(arrayBuffer);
         viewer.setData(currentEDFData);
 
-        // Show controls
-        document.getElementById('viewerControls').style.display = 'grid';
+        // Show inline controls
+        document.getElementById('viewerControlsInline').style.display = 'flex';
 
         // Display file info
         displayFileInfo(fileName);
@@ -175,4 +181,8 @@ function formatFileSize(bytes) {
 
 function showError(element, message) {
     element.innerHTML = `<div class="error">Error: ${message}</div>`;
+}
+
+function closeFileList() {
+    document.getElementById('fileListSidebar').style.display = 'none';
 }
