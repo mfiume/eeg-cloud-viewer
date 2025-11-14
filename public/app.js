@@ -16,6 +16,11 @@ window.addEventListener('DOMContentLoaded', () => {
         viewer.setupCanvas();
         viewer.render();
     });
+
+    // Auto-load default seizure EEG file
+    setTimeout(() => {
+        loadGCSFile('eeg-viewer-demo-samples', 'samples/seizure_23ch.edf');
+    }, 500);
 });
 
 // Load files from GCS bucket
