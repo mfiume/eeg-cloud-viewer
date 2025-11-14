@@ -39,11 +39,6 @@
                     <input type="range" id="timeWindow" min="1" max="30" step="1" value="10" oninput="updateViewer()" />
                     <span id="timeWindowValue">10s</span>
                 </div>
-                <div class="control-item">
-                    <label>Position:</label>
-                    <input type="range" id="scrollPosition" min="0" max="100" step="1" value="0" oninput="updateViewer()" />
-                    <span id="scrollPositionValue">0%</span>
-                </div>
             </div>
         </header>
 
@@ -59,6 +54,19 @@
         <!-- EEG Viewer - Full Screen -->
         <div class="viewer-panel">
             <canvas id="eegCanvas"></canvas>
+
+            <!-- Timeline Scrubber -->
+            <div id="timelineScrubber" class="timeline-scrubber" style="display: none;">
+                <div class="timeline-track">
+                    <div class="timeline-progress" id="timelineProgress"></div>
+                    <input type="range" id="timelineSlider" min="0" max="100" step="0.1" value="0" oninput="updateTimelinePosition(this.value)" />
+                    <div class="timeline-labels">
+                        <span id="currentTime">0:00</span>
+                        <span id="totalDuration">0:00</span>
+                    </div>
+                </div>
+            </div>
+
             <div id="fileInfo" class="file-info"></div>
         </div>
     </div>

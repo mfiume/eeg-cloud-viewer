@@ -127,6 +127,12 @@ async function parseAndDisplayEDF(arrayBuffer, fileName) {
         // Show inline controls
         document.getElementById('viewerControlsInline').style.display = 'flex';
 
+        // Show timeline scrubber
+        document.getElementById('timelineScrubber').style.display = 'block';
+
+        // Initialize timeline
+        initializeTimeline();
+
         // Display file info
         displayFileInfo(fileName);
     } catch (error) {
@@ -161,15 +167,41 @@ function updateViewer() {
 
     const amplitudeScale = parseFloat(document.getElementById('amplitudeScale').value);
     const timeWindow = parseInt(document.getElementById('timeWindow').value);
-    const scrollPosition = parseInt(document.getElementById('scrollPosition').value);
 
     document.getElementById('amplitudeValue').textContent = amplitudeScale.toFixed(1) + 'x';
     document.getElementById('timeWindowValue').textContent = timeWindow + 's';
-    document.getElementById('scrollPositionValue').textContent = scrollPosition + '%';
 
     viewer.setAmplitudeScale(amplitudeScale);
     viewer.setTimeWindow(timeWindow);
-    viewer.setScrollPosition(scrollPosition);
+}
+
+// Initialize timeline
+function initializeTimeline() {
+    const duration = parser.getDuration();
+    document.getElementById('totalDuration').textContent = formatTime(duration);
+    document.getElementById('currentTime').textContent = '0:00';
+    document.getElementById('timelineSlider').value = 0;
+    document.getElementById('timelineProgress').style.width = '0%';
+}
+
+// Update timeline position
+function updateTimelinePosition(value) {
+    if (!currentEDFData) return;
+
+    const duration = parser.getDuration();
+    const currentTime = (value / 100) * duration;
+
+    document.getElementById('currentTime').textContent = formatTime(currentTime);
+    document.getElementById('timelineProgress').style.width = value + '%';
+
+    viewer.setScrollPosition(parseFloat(value));
+}
+
+// Format time as MM:SS
+function formatTime(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
 
 // Utility functions
